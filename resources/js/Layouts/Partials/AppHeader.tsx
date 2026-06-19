@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { ReactNode } from 'react';
 import IconoirIcon from '@/Components/IconoirIcon';
+import NotificationBell from '@/Components/NotificationBell';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -53,34 +54,7 @@ export default function AppHeader({ title, onMobileMenuOpen, tourButton }: AppHe
                     />
                 </div>
 
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <button
-                            type="button"
-                            className="relative flex h-10 w-10 items-center justify-center rounded-full text-text-secondary hover:bg-gray-100"
-                        >
-                            <IconoirIcon name="bell" className="text-2xl" />
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-80">
-                        <div className="border-b border-border px-4 py-2">
-                            <h3 className="text-sm font-bold">Notifications</h3>
-                        </div>
-                        <div className="px-4 py-3 text-sm text-text-secondary">
-                            You have no new notifications.
-                        </div>
-                        {canViewProfile && (
-                            <div className="border-t border-border px-4 py-2 text-center">
-                                <Link
-                                    href={route('notifications.index')}
-                                    className="text-xs font-medium text-primary hover:underline"
-                                >
-                                    View all
-                                </Link>
-                            </div>
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <NotificationBell />
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

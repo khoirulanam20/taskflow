@@ -24,6 +24,7 @@ class HandleInertiaRequests extends Middleware
         $domain = $shared->navigationDomain();
         $user = $request->user();
         $user?->load('roles');
+        $isPm = $request->is('w', 'w/*');
 
         return [
             ...parent::share($request),
@@ -36,9 +37,17 @@ class HandleInertiaRequests extends Middleware
                     'avatar_url' => $user->avatarUrl(),
                     'avatar_initial' => $user->avatarInitial(),
                     'roles' => $user->roles->pluck('name')->values()->all(),
-                    'completed_tours' => ($user->preferences ?? [])['tours'] ?? [],
+                    'completed_tours' => $isPm ? [] : (($user->preferences ?? [])['tours'] ?? []),
                 ] : null,
-                'permissions' => $user?->getAllPermissions()->pluck('name')->values()->all() ?? [],
+                'permissions' => $isPm
+                    ? ($user?->getAllPermissions()->pluck('name')->intersect([
+                        'notifications.list',
+                        'notifications.read',
+                        'profile.read',
+                        'profile.list',
+                        'profile.update',
+                    ])->values()->all() ?? [])
+                    : ($user?->getAllPermissions()->pluck('name')->values()->all() ?? []),
             ],
             'app' => [
                 'name' => $shared->appDisplayName(),
@@ -47,10 +56,13 @@ class HandleInertiaRequests extends Middleware
                 'faviconUrl' => $shared->webFaviconUrl(),
                 'googleOAuthEnabled' => $shared->googleOAuthEnabled(),
             ],
-            'sidebarNavigation' => $shared->sidebarNavigation($domain),
-            'dynamicMenus' => $shared->dynamicMenus($domain),
+            'sidebarNavigation' => $isPm
+                ? ['groups' => [], 'ungrouped' => []]
+                : $shared->sidebarNavigation($domain),
+            'dynamicMenus' => $isPm ? [] : $shared->dynamicMenus($domain),
             'impersonating' => $request->session()->has('impersonator_id'),
             'flash' => $shared->flashMessage(),
+            'notificationPreview' => $shared->notificationPreview(),
         ];
     }
 }

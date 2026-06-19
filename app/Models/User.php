@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -61,5 +62,24 @@ class User extends Authenticatable
     public function avatarInitial(): string
     {
         return strtoupper(substr($this->name ?: 'U', 0, 1));
+    }
+
+    public function workspaces()
+    {
+        return $this->belongsToMany(Workspace::class, 'workspace_members')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
+    public function activeWorkspace(): BelongsTo
+    {
+        return $this->belongsTo(Workspace::class, 'active_workspace_id');
+    }
+
+    public function spaces()
+    {
+        return $this->belongsToMany(Space::class, 'space_members')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 }

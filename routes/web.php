@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Pm\PmEntryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Superadmin\ActivityLogController;
 use App\Http\Controllers\Superadmin\ConfigController;
@@ -66,7 +67,9 @@ Route::middleware('auth')->group(function () {
         ->name('profile.two-factor.destroy');
     Route::post('/profile/tours/complete', [UserTourController::class, 'complete'])->name('profile.tours.complete');
     Route::get('/notifications', [NotificationController::class, 'index'])->middleware('permission.check:notifications.list')->name('notifications.index');
-    Route::post('/notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])->middleware('permission.check:notifications.read')->name('notifications.read');
+    Route::get('/notifications/preview', [NotificationController::class, 'preview'])->name('notifications.preview');
+    Route::post('/notifications/{notificationId}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::delete('/notifications/{notificationId}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::post('/impersonate/stop', [ImpersonateController::class, 'stop'])->name('impersonate.stop');
 
     Route::get('/superadmin/{path?}', function (?string $path = null) {
@@ -81,6 +84,8 @@ $adminRouteName = config('starterkit.admin_route_name');
 
 Route::prefix($adminPrefix)->name($adminRouteName.'.')->middleware(['auth'])->group(function (): void {
     Route::get('/dashboard', [SuperadminDashboardController::class, 'index'])->middleware('permission.check:dashboard.list')->name('dashboard');
+
+    Route::get('/pm', PmEntryController::class)->middleware('permission.check:pm.list')->name('pm.index');
 
     Route::get('/users', [UserController::class, 'index'])->middleware('permission.check:users.list')->name('users.index');
     Route::post('/users', [UserController::class, 'store'])->middleware('permission.check:users.create')->name('users.store');

@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import IconoirIcon from '@/Components/IconoirIcon';
 import { Button } from '@/Components/ui/button';
 
 interface ErrorBoundaryProps {
@@ -23,14 +24,23 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
     render() {
         if (this.state.hasError) {
             return (
-                <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 p-8 text-center">
-                    <h2 className="text-xl font-semibold text-text-primary">Terjadi kesalahan pada tampilan</h2>
-                    <p className="max-w-md text-sm text-text-secondary">
-                        Muat ulang halaman. Jika masalah berlanjut, hubungi administrator.
-                    </p>
-                    <Button type="button" onClick={() => window.location.reload()}>
-                        Muat ulang
-                    </Button>
+                <div className="flex min-h-screen items-center justify-center bg-background p-6">
+                    <div className="card w-full max-w-md space-y-4 p-8 text-center">
+                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-danger/10 text-danger">
+                            <IconoirIcon name="warning-circle" className="text-2xl" />
+                        </div>
+                        <div className="space-y-2">
+                            <h2 className="text-xl font-semibold text-text-primary">
+                                Terjadi kesalahan pada tampilan
+                            </h2>
+                            <p className="text-sm text-text-secondary">
+                                Muat ulang halaman. Jika masalah berlanjut, hubungi administrator.
+                            </p>
+                        </div>
+                        <Button type="button" className="w-full sm:w-auto" onClick={() => window.location.reload()}>
+                            Muat ulang
+                        </Button>
+                    </div>
                 </div>
             );
         }

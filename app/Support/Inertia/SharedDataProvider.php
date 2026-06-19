@@ -187,4 +187,35 @@ class SharedDataProvider
 
         return app(UserNavigationDomain::class)->resolve(auth()->user());
     }
+
+    /**
+     * @return array{unread_count: int, recent: array<int, array{id: string, title: string, message: string, url: string|null, read_at: string|null, created_at: string|null}>}|null
+     */
+    public function notificationPreview(): ?array
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return null;
+        }
+
+        $recent = $user->notifications()
+            ->latest()
+            ->limit(30)
+            ->get()
+            ->map(fn ($notification) => [
+                'id' => $notification->id,
+                'title' => $notification->data['title'] ?? 'Notifikasi',
+                'message' => $notification->data['message'] ?? $notification->data['body'] ?? '',
+                'url' => $notification->data['url'] ?? null,
+                'read_at' => $notification->read_at?->toIso8601String(),
+                'created_at' => $notification->created_at?->toIso8601String(),
+            ])
+            ->values()
+            ->all();
+
+        return [
+            'unread_count' => $user->unreadNotifications()->count(),
+            'recent' => $recent,
+        ];
+    }
 }

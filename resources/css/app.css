@@ -62,6 +62,51 @@
     .badge-danger {
         @apply inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-danger;
     }
+
+    .pm-markdown h1 {
+        @apply mb-3 text-xl font-bold;
+    }
+
+    .pm-markdown h2 {
+        @apply mb-2 text-lg font-semibold;
+    }
+
+    .pm-markdown h3 {
+        @apply mb-2 text-base font-semibold;
+    }
+
+    .pm-markdown p {
+        @apply mb-2 leading-relaxed;
+    }
+
+    .pm-markdown ul {
+        @apply mb-2 list-disc pl-5;
+    }
+
+    .pm-markdown ol {
+        @apply mb-2 list-decimal pl-5;
+    }
+
+    .pm-markdown code {
+        @apply rounded bg-gray-100 px-1 py-0.5 text-xs;
+        font-family: ui-monospace, monospace;
+    }
+
+    .pm-markdown pre {
+        @apply mb-2 overflow-x-auto rounded-md bg-gray-900 p-3 text-xs text-white;
+    }
+
+    .pm-markdown pre code {
+        @apply bg-transparent p-0 text-white;
+    }
+
+    .pm-markdown blockquote {
+        @apply mb-2 border-l-4 border-border pl-3 text-text-secondary;
+    }
+
+    .pm-markdown a {
+        @apply text-accent underline;
+    }
 }
 
 .app-tour-popover {

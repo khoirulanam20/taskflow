@@ -51,6 +51,7 @@ export type PageProps<
     dynamicMenus: MenuItem[];
     impersonating: boolean;
     flash: FlashMessage | null;
+    notificationPreview: NotificationPreview | null;
     errors: Record<string, string>;
     ziggy?: Record<string, unknown>;
 };
@@ -191,12 +192,27 @@ export interface ActivityLogFilterOptions {
     causers: Array<{ id: number; name: string; email: string }>;
 }
 
+export interface NotificationPreview {
+    unread_count: number;
+    recent: NotificationPreviewItem[];
+}
+
+export interface NotificationPreviewItem {
+    id: string;
+    title: string;
+    message: string;
+    url: string | null;
+    read_at: string | null;
+    created_at: string | null;
+}
+
 export interface NotificationItem {
     id: string;
     data: {
         title?: string;
         message?: string;
         body?: string;
+        url?: string;
     };
     read_at: string | null;
     created_at: string;

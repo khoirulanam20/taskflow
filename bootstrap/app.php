@@ -1,18 +1,23 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
-use Spatie\Permission\Middleware\RoleMiddleware;
+use App\Http\Middleware\EnforceImpersonationTimeout;
 use App\Http\Middleware\EnsureAllPermissions;
 use App\Http\Middleware\EnsureAnyPermission;
 use App\Http\Middleware\EnsureModulePermission;
 use App\Http\Middleware\EnsurePermission;
-use App\Http\Middleware\EnforceImpersonationTimeout;
 use App\Http\Middleware\EnsureTwoFactorVerified;
+use App\Http\Middleware\EnsureWorkspaceMember;
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\ImpersonationBannerData;
 use App\Http\Middleware\SecurityHeaders;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Middleware\RoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,11 +25,14 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/internal.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function (): void {
+            Route::middleware('web')->group(base_path('routes/pm.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
-            \App\Http\Middleware\HandleInertiaRequests::class,
-            \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            HandleInertiaRequests::class,
+            AddLinkHeadersForPreloadedAssets::class,
             SecurityHeaders::class,
         ]);
 
@@ -34,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission.any' => EnsureAnyPermission::class,
             'permission.module' => EnsureModulePermission::class,
             'role' => RoleMiddleware::class,
+            'workspace.member' => EnsureWorkspaceMember::class,
         ]);
         $middleware->web(append: [
             ImpersonationBannerData::class,
@@ -41,9 +50,10 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureTwoFactorVerified::class,
         ]);
     })
-    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule): void {
+    ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('activitylog:clean')->daily();
         $schedule->command('backup:database')->dailyAt('02:00');
+        $schedule->command('pm:notify-due-tasks')->dailyAt('08:00');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

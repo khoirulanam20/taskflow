@@ -7,12 +7,24 @@ const Sheet = DialogPrimitive.Root;
 const SheetTrigger = DialogPrimitive.Trigger;
 const SheetClose = DialogPrimitive.Close;
 
+const SheetOverlay = React.forwardRef<
+    React.ElementRef<typeof DialogPrimitive.Overlay>,
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+    <DialogPrimitive.Overlay
+        ref={ref}
+        className={cn('fixed inset-0 z-50 bg-black/40', className)}
+        {...props}
+    />
+));
+SheetOverlay.displayName = DialogPrimitive.Overlay.displayName;
+
 const SheetContent = React.forwardRef<
     React.ElementRef<typeof DialogPrimitive.Content>,
     React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
     <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+        <SheetOverlay />
         <DialogPrimitive.Content
             ref={ref}
             className={cn(
@@ -31,4 +43,25 @@ const SheetContent = React.forwardRef<
 ));
 SheetContent.displayName = 'SheetContent';
 
-export { Sheet, SheetTrigger, SheetClose, SheetContent };
+const SheetContentRight = React.forwardRef<
+    React.ElementRef<typeof DialogPrimitive.Content>,
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+    <DialogPrimitive.Portal>
+        <SheetOverlay />
+        <DialogPrimitive.Content
+            ref={ref}
+            className={cn(
+                'fixed inset-y-0 right-0 z-50 flex w-full max-w-3xl flex-col border-l border-border bg-white shadow-2xl outline-none',
+                className,
+            )}
+            {...props}
+        >
+            <DialogPrimitive.Title className="sr-only">Detail task</DialogPrimitive.Title>
+            {children}
+        </DialogPrimitive.Content>
+    </DialogPrimitive.Portal>
+));
+SheetContentRight.displayName = 'SheetContentRight';
+
+export { Sheet, SheetTrigger, SheetClose, SheetContent, SheetContentRight };

@@ -38,6 +38,23 @@ class ModuleSeeder extends Seeder
             ],
             [
                 'group' => [
+                    'name' => 'Proyek',
+                    'code' => 'proyek',
+                    'sort_order' => 25,
+                ],
+                'modules' => [
+                    [
+                        'title' => 'TaskFlow',
+                        'code' => 'pm',
+                        'route_name' => 'app.pm.index',
+                        'icon' => '<i class="iconoir-check-circle"></i>',
+                        'sort_order' => 15,
+                        'actions' => ['list'],
+                    ],
+                ],
+            ],
+            [
+                'group' => [
                     'name' => 'Pengaturan Pengguna',
                     'code' => 'pengaturan_pengguna',
                     'sort_order' => 20,
